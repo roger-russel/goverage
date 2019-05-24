@@ -1,0 +1,3 @@
+github.com/roger-russel/example-fasthttp/cmd/api
+github.com/roger-russel/example-fasthttp/internal/api/controller
+github.com/roger-russel/example-fasthttp/internal/api/router
