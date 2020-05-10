@@ -1,0 +1,490 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">goverage-test-crud/cmd/crud/main.go (25.7%)</option>
+				
+				<option value="file1">goverage-test-crud/internal/pkg/api/controllers/healthz/index.go (100.0%)</option>
+				
+				<option value="file2">goverage-test-crud/internal/pkg/api/controllers/users/create.go (0.0%)</option>
+				
+				<option value="file3">goverage-test-crud/internal/pkg/api/controllers/users/delete.go (0.0%)</option>
+				
+				<option value="file4">goverage-test-crud/internal/pkg/api/controllers/users/index.go (31.0%)</option>
+				
+				<option value="file5">goverage-test-crud/internal/pkg/api/routers/routers.go (100.0%)</option>
+				
+				<option value="file6">goverage-test-crud/pkg/database/connector.go (66.7%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package main
+
+import (
+        "context"
+        "database/sql"
+        "net/http"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+
+        "goverage-test-crud/internal/pkg/api/routers"
+        "goverage-test-crud/pkg/database"
+
+        _ "github.com/mattn/go-sqlite3"
+        log "github.com/sirupsen/logrus"
+)
+
+var dbConn string = "./database.db"
+var dbDriver string = "sqlite3"
+var apiPort string = "8080"
+
+func init() <span class="cov10" title="2">{
+
+        log.SetFormatter(&amp;log.JSONFormatter{})
+        log.SetOutput(os.Stdout)
+        os.Remove(dbConn)
+        db, err := sql.Open(dbDriver, dbConn)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error("Sql open database error")
+        }</span>
+
+        <span class="cov10" title="2">defer db.Close()
+
+        sqlDdl := `
+        create table users (id integer not null primary key, name text);
+        delete from users;
+        `
+
+        _, err = db.Exec(sqlDdl)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(sqlDdl)
+                return
+        }</span>
+}
+
+func main() <span class="cov0" title="0">{
+
+        log.SetFormatter(&amp;log.JSONFormatter{})
+        log.Info("Starting backend")
+
+        if os.Getenv("API_PORT") != "" </span><span class="cov0" title="0">{
+                apiPort = os.Getenv("API_PORT")
+        }</span>
+
+        <span class="cov0" title="0">if os.Getenv("DB_DRIVER") != "" </span><span class="cov0" title="0">{
+                dbDriver = os.Getenv("DB_DRIVER")
+        }</span>
+
+        <span class="cov0" title="0">if os.Getenv("DB_CONN") != "" </span><span class="cov0" title="0">{
+                dbConn = os.Getenv("DB_CONN")
+        }</span>
+
+        <span class="cov0" title="0">db := database.Connect(dbDriver, dbConn)
+
+        srv := &amp;http.Server{
+                Addr:    ":" + apiPort,
+                Handler: routers.Get(db),
+        }
+
+        go func() </span><span class="cov0" title="0">{
+                if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span><span class="cov0" title="0">{
+                        log.Fatalf("listen: %s\n", err)
+                }</span>
+        }()
+
+        <span class="cov0" title="0">quit := make(chan os.Signal, 1)
+        signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+        &lt;-quit
+
+        log.Println("Shutdown Server ...")
+
+        ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+        defer cancel()
+        if err := srv.Shutdown(ctx); err != nil </span><span class="cov0" title="0">{
+                log.Fatal("Server Shutdown:", err)
+        }</span>
+
+        <span class="cov0" title="0">os.Remove("./database.db")
+
+        log.Println("Server exiting")</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package healthz
+
+import (
+        "net/http"
+
+        log "github.com/sirupsen/logrus"
+)
+
+func Index(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
+        log.Info(r)
+        w.WriteHeader(200)
+        w.Write([]byte("ok"))
+}</span>
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package users
+
+import (
+        "database/sql"
+        "encoding/json"
+        "io/ioutil"
+        "net/http"
+
+        log "github.com/sirupsen/logrus"
+)
+
+// Create a new User
+func Create(w http.ResponseWriter, r *http.Request, db *sql.DB) <span class="cov0" title="0">{
+
+        log.Info(r)
+        log.Info("Creating user")
+
+        b, err := ioutil.ReadAll(r.Body)
+        defer r.Body.Close()
+
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), 500)
+                return
+        }</span>
+
+        <span class="cov0" title="0">var u User
+
+        err = json.Unmarshal(b, &amp;u)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), 500)
+                return
+        }</span>
+
+        <span class="cov0" title="0">transaction, err := db.Begin()
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error("Database begin error")
+        }</span>
+
+        <span class="cov0" title="0">statement := "insert into users (id, name) values ($1, $2)"
+        _, err = transaction.Exec(statement, u.ID, u.Name)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+                http.Error(w, err.Error(), 500)
+        }</span>
+        <span class="cov0" title="0">log.Infof("Created user '%d'.", u.ID)
+
+        output, err := json.Marshal(u)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(output)
+                http.Error(w, err.Error(), 500)
+        }</span>
+        <span class="cov0" title="0">w.Header().Set("content-type", "application/json")
+        w.Write(output)
+
+        transaction.Commit()</span>
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">package users
+
+import (
+        "database/sql"
+        "net/http"
+        "strconv"
+
+        log "github.com/sirupsen/logrus"
+
+        "github.com/gorilla/mux"
+)
+
+//Delete User
+func Delete(w http.ResponseWriter, r *http.Request, db *sql.DB) <span class="cov0" title="0">{
+
+        log.Info(r)
+        log.Info("Deleting user")
+        vars := mux.Vars(r)
+        id, err := strconv.Atoi(vars["id"])
+
+        transaction, err := db.Begin()
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error("Database begin error")
+        }</span>
+
+        <span class="cov0" title="0">statement := "delete from users where id = $1"
+        _, err = transaction.Exec(statement, id)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+        }</span>
+        <span class="cov0" title="0">log.Infof("Created user '%d'.", id)
+
+        transaction.Commit()</span>
+}
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package users
+
+import (
+        "database/sql"
+        "encoding/json"
+        "net/http"
+        "strconv"
+
+        "github.com/gorilla/mux"
+        log "github.com/sirupsen/logrus"
+)
+
+//IndexByID the user by id
+func IndexByID(w http.ResponseWriter, r *http.Request, db *sql.DB) <span class="cov0" title="0">{
+        log.Info(r)
+        vars := mux.Vars(r)
+        log.Info("Getting user by id: " + vars["id"])
+
+        id, err := strconv.Atoi(vars["id"])
+
+        db.Begin()
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error("Database begin error")
+        }</span>
+
+        <span class="cov0" title="0">statement, err := db.Prepare("select id, name from users where id = ?")
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+        }</span>
+
+        <span class="cov0" title="0">u := User{}
+        err = statement.QueryRow(id).Scan(&amp;u.ID, &amp;u.Name)
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+        }</span>
+
+        <span class="cov0" title="0">output, err := json.Marshal(u)
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), 500)
+                return
+        }</span>
+        <span class="cov0" title="0">w.Header().Set("content-type", "application/json")
+        w.Write(output)</span>
+
+}
+
+//Index the user by id
+func Index(w http.ResponseWriter, r *http.Request, db *sql.DB) <span class="cov8" title="1">{
+
+        log.Info(r)
+        log.Info("Getting users")
+
+        if _, err := db.Begin(); err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error("Database begin error")
+        }</span>
+
+        <span class="cov8" title="1">statement, err := db.Prepare("select id, name from users")
+
+        if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+        }</span>
+
+        <span class="cov8" title="1">userList := make([]User, 0)
+        rows, err := statement.Query()
+
+        for rows.Next() </span><span class="cov0" title="0">{
+
+                u := User{}
+
+                if err := rows.Scan(&amp;u.ID, &amp;u.Name); err != nil </span><span class="cov0" title="0">{
+                        log.Fatal(err)
+                }</span>
+
+                <span class="cov0" title="0">userList = append(userList, u)</span>
+
+        }
+
+        <span class="cov8" title="1">if err != nil </span><span class="cov0" title="0">{
+                log.WithError(err).Error(statement)
+        }</span>
+
+        <span class="cov8" title="1">output, err := json.Marshal(userList)
+
+        if err != nil </span><span class="cov0" title="0">{
+                http.Error(w, err.Error(), 500)
+                return
+        }</span>
+
+        <span class="cov8" title="1">w.Header().Set("content-type", "application/json")
+        w.Write(output)</span>
+
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package routers
+
+import (
+        "database/sql"
+        "net/http"
+
+        "goverage-test-crud/internal/pkg/api/controllers/healthz"
+        "goverage-test-crud/internal/pkg/api/controllers/users"
+
+        "github.com/gorilla/mux"
+)
+
+//Get Routers
+func Get(db *sql.DB) *mux.Router <span class="cov4" title="2">{
+
+        router := mux.NewRouter()
+
+        router.HandleFunc("/users", injector(users.Index, db)).Methods("GET")
+        router.HandleFunc("/users/{id:[0-9]+}", injector(users.IndexByID, db)).Methods("GET")
+        router.HandleFunc("/users", injector(users.Create, db)).Methods("POST")
+        router.HandleFunc("/users/{id:[0-9]+}", injector(users.Delete, db)).Methods("DELETE")
+        router.HandleFunc("/healthz", healthz.Index).Methods("GET")
+
+        return router
+
+}</span>
+
+func injector(f func(w http.ResponseWriter, r *http.Request, db *sql.DB), db *sql.DB) func(w http.ResponseWriter, r *http.Request) <span class="cov10" title="8">{
+        return func(w http.ResponseWriter, r *http.Request) </span><span class="cov1" title="1">{
+                f(w, r, db)
+        }</span>
+}
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package database
+
+import (
+        "database/sql"
+        "os"
+)
+
+var currentDrive string
+var currentStrConn string
+var currentDB *sql.DB
+
+//Connect to database
+func Connect(drive string, strConn string) *sql.DB <span class="cov10" title="2">{
+        var err error
+
+        currentDrive = drive
+        currentStrConn = strConn
+
+        if currentDB, err = sql.Open(drive, strConn); err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+
+        <span class="cov10" title="2">return currentDB</span>
+
+}
+
+func Close() <span class="cov0" title="0">{
+        if err := currentDB.Close(); err != nil </span><span class="cov0" title="0">{
+                panic(err)</span>
+        }
+}
+
+func Remove() <span class="cov10" title="2">{
+        os.Remove(currentStrConn)
+}</span>
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

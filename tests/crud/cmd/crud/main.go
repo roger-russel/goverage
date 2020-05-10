@@ -16,11 +16,16 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+var dbConn string = "./database.db"
+var dbDriver string = "sqlite3"
+var apiPort string = "8080"
+
 func init() {
+
 	log.SetFormatter(&log.JSONFormatter{})
 	log.SetOutput(os.Stdout)
-	os.Remove("./database.db")
-	db, err := sql.Open("sqlite3", "./database.db")
+	os.Remove(dbConn)
+	db, err := sql.Open(dbDriver, dbConn)
 	if err != nil {
 		log.WithError(err).Error("Sql open database error")
 	}
@@ -44,13 +49,19 @@ func main() {
 	log.SetFormatter(&log.JSONFormatter{})
 	log.Info("Starting backend")
 
-	apiPort := os.Getenv("API_PORT")
-
-	if apiPort == "" {
-		apiPort = "8080"
+	if os.Getenv("API_PORT") != "" {
+		apiPort = os.Getenv("API_PORT")
 	}
 
-	db := database.Connect("sqlite3", "./database.db")
+	if os.Getenv("DB_DRIVER") != "" {
+		dbDriver = os.Getenv("DB_DRIVER")
+	}
+
+	if os.Getenv("DB_CONN") != "" {
+		dbConn = os.Getenv("DB_CONN")
+	}
+
+	db := database.Connect(dbDriver, dbConn)
 
 	srv := &http.Server{
 		Addr:    ":" + apiPort,
@@ -76,7 +87,7 @@ func main() {
 		log.Fatal("Server Shutdown:", err)
 	}
 
-	os.Remove("./backend.db")
+	os.Remove("./database.db")
 
 	log.Println("Server exiting")
 }
