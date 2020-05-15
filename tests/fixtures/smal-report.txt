@@ -1,0 +1,13 @@
+mode: atomic
+goverage-test-crud/internal/pkg/api/routers/routers.go:14.34,26.2 7 1
+goverage-test-crud/internal/pkg/api/routers/routers.go:28.132,29.54 1 4
+goverage-test-crud/internal/pkg/api/routers/routers.go:29.54,31.3 1 0
+goverage-test-crud/pkg/database/connector.go:13.52,19.59 4 1
+goverage-test-crud/pkg/database/connector.go:23.2,23.18 1 1
+goverage-test-crud/pkg/database/connector.go:19.59,20.13 1 0
+goverage-test-crud/pkg/database/connector.go:27.14,28.42 1 0
+goverage-test-crud/pkg/database/connector.go:28.42,29.13 1 0
+goverage-test-crud/pkg/database/connector.go:33.15,35.2 1 1
+goverage-test-crud/cmd/crud/main.go:23.13,29.16 5 1
+goverage-test-crud/cmd/crud/main.go:33.2,41.16 4 1
+goverage-test-crud/cmd/crud/main.go:29.16,31.3 1 0

@@ -20,3 +20,10 @@ goverage clean $FULL_FILE_NAME -o $NEW_FILE_NAME --remove-origin
 ```sh
 goverage --help
 ```
+
+## Default Report File
+
+```coverage
+mode: atomic
+name.go:line.column,line.column numberOfStatements count
+```

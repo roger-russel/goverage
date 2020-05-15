@@ -1,15 +1,6 @@
-.PHONY: packages
+.PHONY: dev
 
-packages:
-	@dep ensure
-
-.PHONY: coverage test
-
-test:
-	@go test -cover -coverprofile=./coverage.dirty.txt -covermode=atomic -coverpkg=all ./...
-	@goverage clean coverage.dirty.txt -o coverage.txt --remove-origin
+dev:
+	@go run cmd/goverage/main.go -c ./tests/crud/coverage.txt
 
 
-coverage: test
-	@go tool cover -html=./coverage.txt -o coverage.html
-	@google-chrome coverage.html
