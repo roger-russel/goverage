@@ -9,8 +9,7 @@ import (
 
 var rootCmd *cobra.Command
 
-//CoverageFile should have where the coverage file is
-var coverageFile string
+var flags map[string]string
 
 //Execute the commands
 func Execute(vf FullVersion) {
@@ -21,14 +20,22 @@ func Execute(vf FullVersion) {
 		Use:   "goverage [sub]",
 		Short: "goverage command",
 		Run: func(cmd *cobra.Command, args []string) {
-			generator.BeautifulReport(cmd, args, coverageFile)
+			generator.BeautifulReport(cmd, args, flags)
 		},
 	}
 
 	rootCmd.AddCommand(Version(vf))
 
-	rootCmd.Flags().StringVarP(&coverageFile, "covererage-file", "c", "", "Where goverage will look for the coverate report file eg: -c ./tmp/coverage.txt")
+	//CoverageFile should have where the coverage file is
+	var coverageFile string
+	rootCmd.Flags().StringVarP(&coverageFile, "coverage-file", "c", "", "Where goverage will look for the coverate report file eg: -c ./tmp/coverage.txt")
 	rootCmd.MarkFlagRequired("covererage-file")
+
+	var path string
+	rootCmd.Flags().StringVarP(&path, "path", "c", "", "The root path of the project wich coverage as taken eg: -p ./go/src/myproject")
+
+	flags["coverage-file"] = coverageFile
+	flags["path"] = path
 
 	rootCmd.Execute()
 
@@ -40,4 +47,8 @@ func checkDefaultCommand() {
 		os.Args = append([]string{os.Args[0], "--help"}, os.Args[1:]...)
 	}
 
+}
+
+func init() {
+	flags = make(map[string]string)
 }

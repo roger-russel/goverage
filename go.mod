@@ -6,6 +6,7 @@ require (
 	github.com/docker/docker v1.13.1
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gobuffalo/packr v1.30.1
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/mitchellh/mapstructure v1.3.0 // indirect
 	github.com/pelletier/go-toml v1.7.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect

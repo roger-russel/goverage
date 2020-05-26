@@ -39,7 +39,8 @@ func ReadFile(filename string) CoverStruct {
 	}
 
 	coverStruct := make(CoverStruct, 0)
-	duplicatedHash := make(map[string]bool)
+	duplicatedHash := make(map[string]map[string]bool)
+
 	for fileScanner.Scan() {
 		line := strings.Split(fileScanner.Text(), ":")
 		file := line[0]
@@ -50,7 +51,7 @@ func ReadFile(filename string) CoverStruct {
 
 }
 
-func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map[string]bool) {
+func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map[string]map[string]bool) {
 
 	swapRaw := strings.Split(lineRaw, " ")
 	count, err := strconv.Atoi(swapRaw[2])
@@ -72,7 +73,11 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 		panic(err)
 	}
 
-	if isDuplicated, ok := duplicatedHash[swapRaw[0]]; !(isDuplicated || ok) {
+	if _, ok := duplicatedHash[file]; !ok {
+		duplicatedHash[file] = make(map[string]bool)
+	}
+
+	if isDuplicated, ok := duplicatedHash[file][swapRaw[0]]; !(isDuplicated || ok) {
 		c[file].NumberOfStatements += statements
 	}
 
