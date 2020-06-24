@@ -132,12 +132,16 @@
           if (coverage == 100) {
             color = colors[100]
           } else {
-            for ( i = 100; i => 0 ; i -= 10 ) {
+            for ( let i = 100; i => 0 ; i -= 10 ) {
               if (coverage >= i) {
                 color = colors[i]
                 break;
               }
             }
+          }
+
+          if (coverage == 0) {
+            coverage = 100
           }
 
           return "background:linear-gradient(90deg, "+color+" "+coverage+"%, white "+coverage+"%);"
