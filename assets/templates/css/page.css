@@ -1,5 +1,5 @@
 span.pre { white-space: pre; }
-.page .v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {border-bottom: none}
+.page .v-data-table tbody tr:not(:last-child) td:last-child, .page .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {border-bottom: none}
 .page .v-card .v-card__title { border-bottom: 2px solid;}
 .page .line { width: 50px; }
 

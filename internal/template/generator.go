@@ -45,6 +45,8 @@ type Content struct {
 type FileList struct {
 	Name     string  `json:"name"`
 	Lines    int     `json:"lines"`
+	Green    int     `json:"green"`
+	Red      int     `json:"red"`
 	Coverage float32 `json:"coverage"`
 }
 
@@ -67,6 +69,7 @@ func Gen(box packr.Box, filesList []FileList, wr io.Writer, theme string) {
 			unBox(box, "css/vuetify.min.css"),
 			unBox(box, "css/roboto.css"),
 			unBox(box, "css/page.css"),
+			unBox(box, "css/table-list.css"),
 			unBox(box, "css/themes/"+theme+".css"),
 		},
 
@@ -195,6 +198,7 @@ func getTemplates(box packr.Box) (tmpl *template.Template) {
 	tmpl = template.Must(template.New("index").Parse(tplIndex))
 
 	templatesNames := []string{
+		"table-list.tpl",
 		"page.tpl",
 	}
 

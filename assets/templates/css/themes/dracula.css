@@ -1,15 +1,17 @@
-.dracula .cov-color-0 { color: #ff5555 }
-.dracula .cov-color-1 { color: rgb(128, 128, 128); }
-.dracula .cov-color-2 { color: rgb(116, 140, 131); }
-.dracula .cov-color-3 { color: rgb(104, 152, 134); }
-.dracula .cov-color-4 { color: rgb(92, 164, 137); }
-.dracula .cov-color-5 { color: rgb(80, 176, 140); }
-.dracula .cov-color-6 { color: rgb(68, 188, 143); }
-.dracula .cov-color-7 { color: rgb(56, 200, 146); }
-.dracula .cov-color-8 { color: rgb(44, 212, 149); }
-.dracula .cov-color-9 { color: rgb(32, 224, 152); }
-.dracula .cov-color-10 { color: rgb(20, 236, 155); }
-.dracula .cov-color-untracked { color: #6272a4; }
+.dracula .theme--dark.v-app-bar.v-toolbar.v-sheet { background-color:#282a36; }
+
+.dracula .page .cov-color-0 { color: #ff5555 }
+.dracula .page .cov-color-1 { color: rgb(128, 128, 128); }
+.dracula .page .cov-color-2 { color: rgb(116, 140, 131); }
+.dracula .page .cov-color-3 { color: rgb(104, 152, 134); }
+.dracula .page .cov-color-4 { color: rgb(92, 164, 137); }
+.dracula .page .cov-color-5 { color: rgb(80, 176, 140); }
+.dracula .page .cov-color-6 { color: rgb(68, 188, 143); }
+.dracula .page .cov-color-7 { color: rgb(56, 200, 146); }
+.dracula .page .cov-color-8 { color: rgb(44, 212, 149); }
+.dracula .page .cov-color-9 { color: rgb(32, 224, 152); }
+.dracula .page .cov-color-10 { color: rgb(20, 236, 155); }
+.dracula .page .cov-color-untracked { color: #6272a4; }
 
 .dracula .page table, .dracula .page .v-card { background-color: #282a36;}
 .dracula .page .v-card .v-card__title {color: #f8f8f2; }

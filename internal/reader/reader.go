@@ -3,7 +3,6 @@ package reader
 import (
 	"bufio"
 	"log"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -14,6 +13,8 @@ type LineCover struct {
 	//NumberOfStatements in line
 	Coverage           float32
 	NumberOfStatements int
+	Green              int
+	Red                int
 	//        line   column count
 	Report map[int]map[int]int
 }
@@ -71,8 +72,9 @@ func ReadFile(filename string) CoverStruct {
 			}
 		}
 
-		cover := float64(pgCountCover) * 100 / float64(pgCountStatments)
-		(*coverStruct[page]).Coverage = float32(math.Floor(cover))
+		(*coverStruct[page]).Green = pgCountCover
+		(*coverStruct[page]).Red = pgCountStatments - pgCountCover
+		(*coverStruct[page]).Coverage = float32(pgCountCover) * 100 / float32(pgCountStatments)
 
 	}
 
@@ -94,6 +96,8 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 		c[file] = &LineCover{
 			NumberOfStatements: 0,
 			Coverage:           0,
+			Green:              0,
+			Red:                0,
 			Report:             make(map[int]map[int]int, 0),
 		}
 	}
@@ -109,6 +113,7 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 	}
 
 	if isDuplicated, ok := duplicatedHash[file][area]; !(isDuplicated || ok) {
+		duplicatedHash[file][area] = true
 		c[file].NumberOfStatements += statements
 	}
 

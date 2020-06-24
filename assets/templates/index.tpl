@@ -30,7 +30,6 @@
 
       <v-app-bar
         app
-        color="cyan"
         dark
       >
 
@@ -53,14 +52,9 @@
               sm="12"
               md="12"
             >
-              <v-card>
-                <v-card-title>
-                  <v-spacer></v-spacer>
-                  <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details>
-                  </v-text-field>
-                </v-card-title>
-                <v-data-table :headers="headers" :items="files" :search="search"></v-data-table>
-              </v-card>
+
+            {{ template "table-list" . }}
+
             </v-col>
           </v-row>
 
@@ -91,6 +85,8 @@
               value: 'name',
             },
             { text: 'Lines', value: 'lines' },
+            { text: 'Green', value: 'green' },
+            { text: 'Red', value: 'red' },
             { text: 'Coverage', value: 'coverage' },
           ],
           files: {{.FilesList}},
@@ -113,7 +109,40 @@
 
           return "cov-color-" + count
 
+        },
+
+        getCoverageStyle(coverage) {
+
+          let color
+
+          let colors = {
+            0:"#ffbfbf",
+            10:"#ffc3bf",
+            20:"#ffd0bf",
+            30:"#ffddbf",
+            40:"#ffe9bf",
+            50:"#fff3df",
+            60:"#faffbf",
+            70:"#eeffbf",
+            80:"#e1ffbf",
+            90:"#c7ffbf",
+            100:"#bfffbf",
+          }
+
+          if (coverage == 100) {
+            color = colors[100]
+          } else {
+            for ( i = 100; i => 0 ; i -= 10 ) {
+              if (coverage >= i) {
+                color = colors[i]
+                break;
+              }
+            }
+          }
+
+          return "background:linear-gradient(90deg, "+color+" "+coverage+"%, white "+coverage+"%);"
         }
+
       }
     })
   </script>
