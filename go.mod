@@ -16,5 +16,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.7.0 // indirect
 	golang.org/x/sys v0.0.0-20200509044756-6aff5f38e54f // indirect
+	google.golang.org/appengine v1.6.1
 	gopkg.in/ini.v1 v1.56.0 // indirect
 )

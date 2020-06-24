@@ -1,17 +1,24 @@
 package generator
 
 import (
+	"fmt"
+	"io"
+	"os"
 	"sort"
 
 	"github.com/gobuffalo/packr"
+	"github.com/roger-russel/goverage/internal/flags"
 	"github.com/roger-russel/goverage/internal/reader"
 	"github.com/roger-russel/goverage/internal/template"
 	"github.com/spf13/cobra"
 )
 
 //BeautifulReport takes the atomic cover profile and make a beautiful html report
-func BeautifulReport(c *cobra.Command, args []string, flags map[string]string) {
-	coverStruct := reader.ReadFile(flags["coverageFile"])
+func BeautifulReport(c *cobra.Command, args []string, flags flags.Flags) {
+
+	coverStruct := reader.ReadFile(flags.CoverageFile)
+
+	box := packr.NewBox("../../assets/templates")
 
 	filesList := []template.FileList{}
 
@@ -34,7 +41,23 @@ func BeautifulReport(c *cobra.Command, args []string, flags map[string]string) {
 
 	}
 
-	box := packr.NewBox("../../assets/templates")
-	template.Gen(box, filesList)
+	var wr io.Writer
+
+	if output := flags.Output; output != "" {
+
+		f, err := os.Create(output)
+
+		if err != nil {
+			panic(fmt.Sprintf("Could not write into %v, error: %v", output, err))
+		}
+
+		wr = f
+		defer f.Close()
+
+	} else {
+		wr = os.Stdout
+	}
+
+	template.Gen(box, filesList, wr, flags.Theme)
 
 }

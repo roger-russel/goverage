@@ -1,0 +1,8 @@
+span.pre { white-space: pre; }
+.page .v-data-table tbody tr:not(:last-child) td:last-child, .theme--light.v-data-table tbody tr:not(:last-child) td:not(.v-data-table__mobile-row) {border-bottom: none}
+.page .v-card .v-card__title { border-bottom: 2px solid;}
+.page .line { width: 50px; }
+
+.page .v-data-table.v-data-table--dense { margin-top: 15px;}
+
+.page { font-family: 'Roboto Mono', monospace;}

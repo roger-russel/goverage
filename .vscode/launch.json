@@ -12,7 +12,8 @@
       "program": "${workspaceFolder}/cmd/goverage",
       "cwd": "${workspaceFolder}",
       "env": {},
-      "args": []
+      "args": ["-c", "./tests/crud/coverage.txt", "-p", "./tests/crud", "-o", "./tmp/test/coverage.html"]
     }
   ]
 }
+

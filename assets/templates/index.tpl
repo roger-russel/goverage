@@ -6,6 +6,7 @@
   <title>Goverage</title>
 
   <link href="https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
 
   {{range .Styles}}
   <style type="text/css">
@@ -19,9 +20,11 @@
   </script>
   {{end}}
 
+
+
 </head>
 
-<body>
+<body class="{{.Theme}}">
   <div id="app">
     <v-app id="inspire">
 
@@ -34,7 +37,7 @@
       <v-toolbar-title>Goverage</v-toolbar-title>
       <v-spacer></v-spacer>
 
-      <v-btn icon>
+      <v-btn icon href="https://github.com/roger-russel/goverage">
         <v-icon>mdi-github-circle</v-icon>
       </v-btn>
 
@@ -64,6 +67,12 @@
 
         </v-container>
       </v-content>
+
+      <v-content class="content">
+        {{ range .Pages}}
+          {{ template "page" . }}
+        {{ end }}
+      </v-content>
     </v-app>
   </div>
 
@@ -89,6 +98,25 @@
           files: {{.FilesList}},
         }
       },
+      methods: {
+        getColorClass(tracked, count) {
+
+          if ( !tracked ) {
+            return "cov-color-untracked"
+          }
+
+          if ( count < 0 ){
+            count = 0
+          }
+
+          if ( count > 10 ){
+            count = 10
+          }
+
+          return "cov-color-" + count
+
+        }
+      }
     })
   </script>
 
