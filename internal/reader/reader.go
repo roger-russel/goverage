@@ -3,6 +3,7 @@ package reader
 import (
 	"bufio"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -11,6 +12,7 @@ import (
 //LineCover is the page coverage data
 type LineCover struct {
 	//NumberOfStatements in line
+	Coverage           float32
 	NumberOfStatements int
 	//        line   column count
 	Report map[int]map[int]int
@@ -18,6 +20,11 @@ type LineCover struct {
 
 //CoverStruct       filename
 type CoverStruct map[string]*LineCover
+
+type coverCount struct {
+	Statements int
+	Cover      bool
+}
 
 //ReadFile read an atomic coverage file and turn it into a map
 func ReadFile(filename string) CoverStruct {
@@ -40,21 +47,44 @@ func ReadFile(filename string) CoverStruct {
 
 	coverStruct := make(CoverStruct, 0)
 	duplicatedHash := make(map[string]map[string]bool)
+	cCont := make(map[string]map[string]coverCount)
 
 	for fileScanner.Scan() {
-		line := strings.Split(fileScanner.Text(), ":")
+		swp := fileScanner.Text()
+		if swp == "" {
+			continue
+		}
+		line := strings.Split(swp, ":")
 		file := line[0]
-		splitContent(coverStruct, file, line[1], duplicatedHash)
+		splitContent(coverStruct, file, line[1], duplicatedHash, cCont)
+	}
+
+	for page := range cCont {
+
+		pgCountStatments := 0
+		pgCountCover := 0
+
+		for _, cc := range cCont[page] {
+			pgCountStatments += cc.Statements
+			if cc.Cover {
+				pgCountCover += cc.Statements
+			}
+		}
+
+		cover := float64(pgCountCover) * 100 / float64(pgCountStatments)
+		(*coverStruct[page]).Coverage = float32(math.Floor(cover))
+
 	}
 
 	return coverStruct
 
 }
 
-func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map[string]map[string]bool) {
+func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map[string]map[string]bool, cCount map[string]map[string]coverCount) {
 
 	swapRaw := strings.Split(lineRaw, " ")
 	count, err := strconv.Atoi(swapRaw[2])
+	area := swapRaw[0]
 
 	if err != nil {
 		panic(err)
@@ -63,6 +93,7 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 	if _, ok := c[file]; !ok {
 		c[file] = &LineCover{
 			NumberOfStatements: 0,
+			Coverage:           0,
 			Report:             make(map[int]map[int]int, 0),
 		}
 	}
@@ -77,17 +108,28 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 		duplicatedHash[file] = make(map[string]bool)
 	}
 
-	if isDuplicated, ok := duplicatedHash[file][swapRaw[0]]; !(isDuplicated || ok) {
+	if isDuplicated, ok := duplicatedHash[file][area]; !(isDuplicated || ok) {
 		c[file].NumberOfStatements += statements
 	}
 
-	swapRawLineCol := strings.Split(swapRaw[0], ",")
+	if _, ok := cCount[file]; !ok {
+		cCount[file] = make(map[string]coverCount)
+	}
+
+	if cc, ok := cCount[file][area]; !cc.Cover || !ok {
+		cCount[file][area] = coverCount{
+			Statements: statements,
+			Cover:      count > 0,
+		}
+	}
+
+	swapRawLineCol := strings.Split(area, ",")
 
 	startLine, startCol := splitLineAndCol(swapRawLineCol[0])
 	endLine, endCol := splitLineAndCol(swapRawLineCol[1])
 
 	addContent(c, file, startLine, startCol, count)
-	//Because it is end of it will not increate the statement on new lines
+	//Because it is end of it will not increase the statement on new lines
 	addContent(c, file, endLine, endCol, count*-1)
 
 }

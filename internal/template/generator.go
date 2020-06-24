@@ -45,8 +45,6 @@ type Content struct {
 type FileList struct {
 	Name     string  `json:"name"`
 	Lines    int     `json:"lines"`
-	Green    int     `json:"green"`
-	Red      int     `json:"red"`
 	Coverage float32 `json:"coverage"`
 }
 

@@ -91,8 +91,6 @@
               value: 'name',
             },
             { text: 'Lines', value: 'lines' },
-            { text: 'Green', value: 'green' },
-            { text: 'Red', value: 'red' },
             { text: 'Coverage', value: 'coverage' },
           ],
           files: {{.FilesList}},

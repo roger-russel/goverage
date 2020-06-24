@@ -34,9 +34,7 @@ func BeautifulReport(c *cobra.Command, args []string, flags flags.Flags) {
 		filesList = append(filesList, template.FileList{
 			Name:     k,
 			Lines:    coverStruct[k].NumberOfStatements,
-			Green:    0,
-			Red:      0,
-			Coverage: 0,
+			Coverage: coverStruct[k].Coverage,
 		})
 
 	}
