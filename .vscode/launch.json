@@ -31,26 +31,23 @@
         "./tmp/coverage.html"
       ]
     },
-
-        {
-          "name": "Simple Multiline",
-          "type": "go",
-          "request": "launch",
-          "mode": "auto",
-          "program": "${workspaceFolder}/cmd/goverage",
-          "cwd": "${workspaceFolder}",
-          "env": {},
-          "args": [
-            "-c",
-            "./tests/multiples-in-same-line/coverage.txt",
-            "-p",
-            "./tests",
-            "-o",
-            "./tmp/coverage.html"
-          ]
-        },
-
-
+    {
+      "name": "Simple Multiline",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/goverage",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "args": [
+        "-c",
+        "./tests/multiples-in-same-line/coverage.txt",
+        "-p",
+        "./tests",
+        "-o",
+        "./tmp/coverage.html"
+      ]
+    },
   ]
 }
 

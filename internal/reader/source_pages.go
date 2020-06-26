@@ -67,7 +67,6 @@ func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name str
 		var lineContent template.Content
 
 		if columns, ok := (*rawContent).Report.CountThroughtLines[lnNumber]; ok {
-			tracked = true
 
 			keys := []int{}
 			for k := range columns {
@@ -82,7 +81,7 @@ func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name str
 				ccNumber := (*rawContent).Report.CountThroughtLines[lnNumber][k]
 
 				left := content[lastColumn:(k - 1)]
-				lastColumn = k
+				lastColumn = k - 1
 
 				lineContent = template.Content{
 					Tracked: tracked,
@@ -95,14 +94,17 @@ func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name str
 				coveredCount += ccNumber
 			}
 
-			lineContent = template.Content{
-				Tracked: tracked,
-				Count:   coveredCount,
-				Content: content[lastColumn-1:],
+			if lastColumn != len(content) {
+
+				lineContent = template.Content{
+					Tracked: tracked,
+					Count:   coveredCount,
+					Content: content[lastColumn-1:],
+				}
+
+				line.Contents = append(line.Contents, lineContent)
+
 			}
-
-			line.Contents = append(line.Contents, lineContent)
-
 		} else {
 
 			lineContent = template.Content{
