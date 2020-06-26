@@ -1,5 +1,4 @@
-# 2020-05-16
+# 2020-06-26
 
-I tried to get the stattments lines/columns but it fails misarable because there is a line which ends at same point that other start, because of that this line was not counted.
+RC1 is comming! All funcionalities to V1 as done, now I want to increment the tests coverages into this own project, and change the packer library to pkger because packer was deprecated.
 
-I will do my first idea that was about creatign a hash validation.

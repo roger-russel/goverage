@@ -9,3 +9,8 @@ dev:
 .PHONY: help
 help:
 	@go run cmd/goverage/main.go
+
+
+.PHONY:
+print:
+	@google-chrome-stable --headless --screenshot  --window-size=auto,auto --default-background-color=0 ./tmp/coverage.html
