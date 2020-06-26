@@ -1,7 +1,6 @@
 package reader
 
 import (
-	"log"
 	"sort"
 	"sync"
 
@@ -32,14 +31,14 @@ func SourcePages(rootPath string, coverStruct *CoverStruct) map[string]*template
 }
 
 func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name string, rawContent *LineCover) {
-
-	defer func() {
-		if r := recover(); r != nil {
-			log.Println("fail parsing", name, " error:", r)
-			(*wg).Done()
-		}
-	}()
-
+	/*
+		defer func() {
+			if r := recover(); r != nil {
+				log.Println("fail parsing", name, " error:", r)
+				(*wg).Done()
+			}
+		}()
+	*/
 	var page template.Page
 
 	page.FullName = name
@@ -68,20 +67,26 @@ func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name str
 
 		if columns, ok := (*rawContent).Report.CountThroughtLines[lnNumber]; ok {
 
-			keys := []int{}
+			keysColumn := []int{}
 			for k := range columns {
-				keys = append(keys, k)
+				keysColumn = append(keysColumn, k)
 			}
 
-			sort.Ints(keys)
+			sort.Ints(keysColumn)
 
-			var lastColumn int = 0
+			var previousColumn int = 0
+			var previousSliceColumn int = 0
 
-			for _, k := range keys {
-				ccNumber := (*rawContent).Report.CountThroughtLines[lnNumber][k]
+			for _, colNumber := range keysColumn {
 
-				left := content[lastColumn:(k - 1)]
-				lastColumn = k - 1
+				ccNumber := (*rawContent).Report.CountThroughtLines[lnNumber][colNumber]
+
+				tracked = verifyIfTracked(&(*rawContent).Report.Tracked, lnNumber, previousColumn)
+
+				left := content[previousSliceColumn:(colNumber - 1)]
+
+				previousColumn = colNumber
+				previousSliceColumn = previousColumn - 1
 
 				lineContent = template.Content{
 					Tracked: tracked,
@@ -92,20 +97,25 @@ func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name str
 				line.Contents = append(line.Contents, lineContent)
 
 				coveredCount += ccNumber
+
 			}
 
-			if lastColumn != len(content) {
+			if previousSliceColumn != len(content) {
+
+				tracked = verifyIfTracked(&(*rawContent).Report.Tracked, lnNumber, previousColumn)
 
 				lineContent = template.Content{
 					Tracked: tracked,
 					Count:   coveredCount,
-					Content: content[lastColumn-1:],
+					Content: content[previousSliceColumn-1:],
 				}
 
 				line.Contents = append(line.Contents, lineContent)
 
 			}
 		} else {
+
+			tracked = verifyIfTracked(&(*rawContent).Report.Tracked, lnNumber, 0)
 
 			lineContent = template.Content{
 				Tracked: tracked,
@@ -131,5 +141,27 @@ func chnPage(wg *sync.WaitGroup, chn chan template.Page, pages *map[string]*temp
 		(*pages)[p.FullName] = &page
 		wg.Done()
 	}
+
+}
+
+func verifyIfTracked(trackRange *[]Tracked, line int, col int) bool {
+
+	for _, r := range *trackRange {
+
+		if r.StartLine <= line &&
+			r.EndLine >= line {
+
+			if (r.StartLine == line && r.StartCol > col) ||
+				(r.EndLine == line && r.EndCol < col) {
+				continue
+			}
+
+			return true
+
+		}
+
+	}
+
+	return false
 
 }
