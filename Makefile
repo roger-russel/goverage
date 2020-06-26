@@ -1,7 +1,7 @@
 .PHONY: dev
 
 simple:
-	@go run cmd/goverage/main.go -c ./tests/crud/coverage.txt -p ./tests/crud -o coverage2.html
+	@go run cmd/goverage/main.go -c ./tests/goverage-test-crud/coverage.txt -p ./tests -o ./tmp/coverage.html
 
 dev:
 	@fresher -c .fresher.yaml

@@ -63,8 +63,8 @@
       </v-content>
 
       <v-content class="content">
-        {{ range .Pages}}
-          {{ template "page" . }}
+        {{ range $value := .Pages }}
+          {{ template "page" $value }}
         {{ end }}
       </v-content>
     </v-app>
@@ -90,6 +90,7 @@
             { text: 'Coverage', value: 'coverage' },
           ],
           files: {{.FilesList}},
+          visiblePages: {{ .VisiblePages }},
         }
       },
       methods: {
@@ -116,17 +117,17 @@
           let color
 
           let colors = {
-            0:"#ffbfbf",
-            10:"#ffc3bf",
-            20:"#ffd0bf",
-            30:"#ffddbf",
-            40:"#ffe9bf",
-            50:"#fff3df",
-            60:"#faffbf",
-            70:"#eeffbf",
-            80:"#e1ffbf",
-            90:"#c7ffbf",
-            100:"#bfffbf",
+            0:"#df0000",
+            10:"#df0d00",
+            20:"#df3b00",
+            30:"#df6800",
+            40:"#df9200",
+            50:"#ef9500",
+            60:"#cddf00",
+            70:"#a3df00",
+            80:"#76df00",
+            90:"#1bdf00",
+            100:"#00df00",
           }
 
           if (coverage == 100) {
@@ -144,9 +145,14 @@
             coverage = 100
           }
 
-          return "background:linear-gradient(90deg, "+color+" "+coverage+"%, white "+coverage+"%);"
-        }
+          return "background:linear-gradient(90deg, "+color+" "+coverage+"%, {{.ThemeBGColor}} "+coverage+"%);"
+        },
 
+        showPage(page){
+          this.visiblePages.list[this.visiblePages.current] = false
+          this.visiblePages.current = page
+          this.visiblePages.list[page] = true
+        },
       }
     })
   </script>

@@ -1,5 +1,5 @@
 {{ define "page" }}
-<v-container fluid class="page" >
+<v-container fluid class="page" v-if="visiblePages.list['{{ .FullName }}']" >
   <v-row
       align="center"
       justify="center"
@@ -30,7 +30,6 @@
                       <span
                       :class="['pre', getColorClass({{.Tracked}},{{.Count}})]"
                       title="{{.Count}}"
-                      color="{{.Color}}"
                       >{{ .Content }}</span>
                     {{ end}}
                   </td>

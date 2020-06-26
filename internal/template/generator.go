@@ -2,7 +2,6 @@ package template
 
 import (
 	"encoding/json"
-	"html"
 	"io"
 	"log"
 	"text/template"
@@ -12,13 +11,15 @@ import (
 
 //HTMLData is the data struct that will be used on template generator
 type HTMLData struct {
-	Theme   string
-	Styles  []string
-	Vue     string
-	Scripts []string
+	Theme        string
+	ThemeBGColor string
+	Styles       []string
+	Vue          string
+	Scripts      []string
 	//FileList expect to be a valid json array of fileList
-	FilesList string
-	Pages     []Page
+	FilesList    string
+	Pages        map[string]*Page
+	VisiblePages string
 }
 
 //Page Information
@@ -37,7 +38,6 @@ type Line struct {
 type Content struct {
 	Tracked bool // If the content is tracked by coverage or not
 	Count   int
-	Color   string
 	Content string
 }
 
@@ -50,8 +50,13 @@ type FileList struct {
 	Coverage float32 `json:"coverage"`
 }
 
+type VisiblePages struct {
+	Current string          `json:"current"`
+	List    map[string]bool `json:"list"`
+}
+
 //Gen erate Template
-func Gen(box packr.Box, filesList []FileList, wr io.Writer, theme string) {
+func Gen(box packr.Box, wr io.Writer, theme string, filesList []FileList, pages map[string]*Page, visiblePages *VisiblePages) {
 
 	tmpl := getTemplates(box)
 
@@ -61,9 +66,16 @@ func Gen(box packr.Box, filesList []FileList, wr io.Writer, theme string) {
 		log.Fatal(err)
 	}
 
+	JVisiblePages, err := json.Marshal(visiblePages)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	HTMLData := HTMLData{
 
-		Theme: theme,
+		Theme:        theme,
+		ThemeBGColor: getThemeBGColor(theme),
 
 		Styles: []string{
 			unBox(box, "css/vuetify.min.css"),
@@ -78,99 +90,9 @@ func Gen(box packr.Box, filesList []FileList, wr io.Writer, theme string) {
 			unBox(box, "js/vuetify.min.js"),
 		},
 
-		FilesList: string(JFileList),
-		Pages: []Page{
-			{
-				FullName: "./cmp/main.go",
-				Lines: []Line{
-					{
-						Line: 1,
-						Contents: []Content{
-							{
-								Tracked: false,
-								Count:   0,
-								Content: "package main",
-							},
-						},
-					},
-					{
-						Line: 2,
-						Contents: []Content{
-							{
-								Tracked: false,
-								Count:   0,
-								Content: "var b int",
-							},
-						},
-					},
-					{
-						Line: 3,
-						Contents: []Content{
-							{
-								Tracked: true,
-								Count:   3,
-								Content: "func main() {",
-							},
-						},
-					},
-					{
-						Line: 4,
-						Contents: []Content{
-							{
-								Tracked: true,
-								Count:   4,
-								Content: html.EscapeString("  if a := 1;"),
-							},
-							{
-								Tracked: true,
-								Count:   4,
-								Content: html.EscapeString("a < b;"),
-							},
-							{
-								Tracked: true,
-								Count:   0,
-								Content: html.EscapeString("a > b"),
-							},
-							{
-								Tracked: false,
-								Count:   0,
-								Content: "{",
-							},
-						},
-					},
-					{
-						Line: 5,
-						Contents: []Content{
-							{
-								Tracked: true,
-								Count:   0,
-								Content: html.EscapeString("    fmt.Println(\"a<b\")"),
-							},
-						},
-					},
-					{
-						Line: 6,
-						Contents: []Content{
-							{
-								Tracked: false,
-								Count:   2,
-								Content: "  }",
-							},
-						},
-					},
-					{
-						Line: 7,
-						Contents: []Content{
-							{
-								Tracked: false,
-								Count:   0,
-								Content: "}",
-							},
-						},
-					},
-				},
-			},
-		},
+		FilesList:    string(JFileList),
+		Pages:        pages,
+		VisiblePages: string(JVisiblePages),
 	}
 
 	tmpl.Execute(wr, HTMLData)

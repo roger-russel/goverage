@@ -13,7 +13,9 @@
 
   <template v-slot:body="{ items }">
     <tbody>
-      <tr v-for="item in items" :key="item.name">
+      <tr v-for="item in items" :key="item.name"
+        v-on:click=showPage(item.name)
+      >
         <td>
           {{"{{"}} item.name {{"}}"}}
         </td>
