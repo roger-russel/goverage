@@ -12,8 +12,21 @@ type LineCover struct {
 	NumberOfStatements int
 	Green              int
 	Red                int
+
+	Report Report
+}
+
+type Report struct {
 	//        line   column count
-	Report map[int]map[int]int
+	CountThroughtLines map[int]map[int]int
+	Tracked            []Tracked
+}
+
+type Tracked struct {
+	StartLine int
+	StartCol  int
+	EndLine   int
+	EndCol    int
 }
 
 //CoverStruct       filename
@@ -88,7 +101,10 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 			Coverage:           0,
 			Green:              0,
 			Red:                0,
-			Report:             make(map[int]map[int]int, 0),
+			Report: Report{
+				CountThroughtLines: make(map[int]map[int]int, 0),
+				Tracked:            make([]Tracked, 0),
+			},
 		}
 	}
 
@@ -127,6 +143,13 @@ func splitContent(c CoverStruct, file string, lineRaw string, duplicatedHash map
 	//Because it is end of it will not increase the statement on new lines
 	addContent(c, file, endLine, endCol, count*-1)
 
+	c[file].Report.Tracked = append(c[file].Report.Tracked, Tracked{
+		StartLine: startLine,
+		StartCol:  startCol,
+		EndLine:   endLine,
+		EndCol:    endCol,
+	})
+
 }
 
 func splitLineAndCol(s string) (line int, col int) {
@@ -152,10 +175,9 @@ func splitLineAndCol(s string) (line int, col int) {
 
 func addContent(c CoverStruct, file string, line int, col int, count int) {
 
-	if _, ok := c[file].Report[line]; !ok {
-		c[file].Report[line] = make(map[int]int, 0)
+	if _, ok := c[file].Report.CountThroughtLines[line]; !ok {
+		c[file].Report.CountThroughtLines[line] = make(map[int]int, 0)
 	}
 
-	c[file].Report[line][col] += count
-
+	c[file].Report.CountThroughtLines[line][col] += count
 }

@@ -1,0 +1,11 @@
+mode: atomic
+tests/multiples-in-same-line/main.go:7.13,9.53 1 1
+tests/multiples-in-same-line/main.go:13.2,13.35 1 1
+tests/multiples-in-same-line/main.go:15.2,15.18 1 1
+tests/multiples-in-same-line/main.go:9.53,11.3 1 0
+tests/multiples-in-same-line/main.go:13.35,13.55 1 1
+tests/multiples-in-same-line/main.go:15.18,15.39 1 1
+tests/multiples-in-same-line/main.go:15.39,15.63 1 0
+tests/multiples-in-same-line/main.go:15.68,15.92 1 1
+tests/multiples-in-same-line/main.go:18.49,22.2 1 1
+tests/multiples-in-same-line/main.go:24.23,26.2 1 1
