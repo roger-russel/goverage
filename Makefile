@@ -10,7 +10,10 @@ dev:
 help:
 	@go run cmd/goverage/main.go
 
-
-.PHONY:
+.PHONY: print
 print:
 	@google-chrome-stable --headless --screenshot  --window-size=auto,auto --default-background-color=0 ./tmp/coverage.html
+
+.PHONY: snapshot
+snapshot:
+	@goreleaser --snapshot --skip-publish --rm-dist

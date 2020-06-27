@@ -4,9 +4,6 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	"text/template"
-
-	"github.com/gobuffalo/packr"
 )
 
 //HTMLData is the data struct that will be used on template generator
@@ -20,25 +17,26 @@ type HTMLData struct {
 	FilesList    string
 	Pages        map[string]*Page
 	VisiblePages string
+	PagesInJSON  string
 }
 
 //Page Information
 type Page struct {
-	FullName string
-	Lines    []Line
+	FullName string `json:"full-name"`
+	Lines    []Line `json:"lines"`
 }
 
 //Line information
 type Line struct {
-	Line     int
-	Contents []Content
+	Line     int       `json:"line"`
+	Contents []Content `json:"contents"`
 }
 
 //Content of lines
 type Content struct {
-	Tracked bool // If the content is tracked by coverage or not
-	Count   int
-	Content string
+	Tracked bool   `json:"tracked"` // If the content is tracked by coverage or not
+	Count   int    `json:"count"`
+	Content string `json:"content"`
 }
 
 //FileList information to be used on template list of files
@@ -56,9 +54,9 @@ type VisiblePages struct {
 }
 
 //Gen erate Template
-func Gen(box packr.Box, wr io.Writer, theme string, filesList []FileList, pages map[string]*Page, visiblePages *VisiblePages) {
+func Gen(wr io.Writer, theme string, filesList []FileList, pages map[string]*Page, visiblePages *VisiblePages) {
 
-	tmpl := getTemplates(box)
+	tmpl := getTemplates()
 
 	JFileList, err := json.Marshal(filesList)
 
@@ -72,70 +70,36 @@ func Gen(box packr.Box, wr io.Writer, theme string, filesList []FileList, pages 
 		log.Fatal(err)
 	}
 
+	jPage, err := json.Marshal(pages)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	HTMLData := HTMLData{
 
 		Theme:        theme,
 		ThemeBGColor: getThemeBGColor(theme),
 
 		Styles: []string{
-			unBox(box, "css/vuetify.min.css"),
-			unBox(box, "css/roboto.css"),
-			unBox(box, "css/page.css"),
-			unBox(box, "css/table-list.css"),
-			unBox(box, "css/themes/"+theme+".css"),
+			unBox("css/vuetify.min.css"),
+			unBox("css/roboto.css"),
+			unBox("css/page.css"),
+			unBox("css/table-list.css"),
+			unBox("css/themes/" + theme + ".css"),
 		},
 
 		Scripts: []string{
-			unBox(box, "js/vue.min.js"),
-			unBox(box, "js/vuetify.min.js"),
+			unBox("js/vue.min.js"),
+			unBox("js/vuetify.min.js"),
 		},
 
 		FilesList:    string(JFileList),
 		Pages:        pages,
 		VisiblePages: string(JVisiblePages),
+		PagesInJSON:  string(jPage),
 	}
 
 	tmpl.Execute(wr, HTMLData)
-
-}
-
-func unBox(box packr.Box, path string) string {
-	pack, err := box.FindString(path)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return pack
-}
-
-func getTemplates(box packr.Box) (tmpl *template.Template) {
-
-	tplIndex, err := box.FindString("index.tpl")
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tmpl = template.Must(template.New("index").Parse(tplIndex))
-
-	templatesNames := []string{
-		"table-list.tpl",
-		"page.tpl",
-	}
-
-	for _, tplName := range templatesNames {
-
-		tpl, err := box.FindString(tplName)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		tmpl = template.Must(tmpl.Parse(tpl))
-
-	}
-
-	return tmpl
 
 }

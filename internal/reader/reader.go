@@ -20,3 +20,7 @@ func read(fileName string) (*bufio.Scanner, *os.File) {
 	return fileScanner, readFile
 
 }
+
+func ReadTemplate() {
+
+}

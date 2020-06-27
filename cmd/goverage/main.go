@@ -21,6 +21,10 @@ func main() {
 		}
 	}()
 
+	if version == "" {
+		version = "snapshot"
+	}
+
 	cmd.Execute(cmd.FullVersion{
 		Version: version,
 		Commit:  commit,

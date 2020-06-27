@@ -48,6 +48,23 @@
         "./tmp/coverage.html"
       ]
     },
+    {
+      "name": "Trinity",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/goverage",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "args": [
+        "-c",
+        "${workspaceFolder}/../../../gitlab.com/dafiti/trinity/coverage.txt",
+        "-p",
+        "/home/roger/go/src",
+        "-o",
+        "./tmp/coverage.html"
+      ]
+    },
   ]
 }
 

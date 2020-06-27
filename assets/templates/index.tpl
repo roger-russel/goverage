@@ -91,6 +91,7 @@
           ],
           files: {{.FilesList}},
           visiblePages: {{ .VisiblePages }},
+          PagesInJSON: {{ .PagesInJSON }},
         }
       },
       methods: {
