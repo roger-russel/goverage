@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"log"
 	"sort"
 	"sync"
 
@@ -18,11 +19,11 @@ func SourcePages(rootPath string, coverStruct *CoverStruct) map[string]*template
 
 	wg.Add(pagesNumber)
 
+	go chnPage(&wg, ch, &pages)
+
 	for name, content := range *coverStruct {
 		go parsePage(&wg, ch, rootPath, name, content)
 	}
-
-	go chnPage(&wg, ch, &pages)
 
 	wg.Wait()
 
@@ -31,14 +32,14 @@ func SourcePages(rootPath string, coverStruct *CoverStruct) map[string]*template
 }
 
 func parsePage(wg *sync.WaitGroup, chn chan template.Page, path string, name string, rawContent *LineCover) {
-	/*
-		defer func() {
-			if r := recover(); r != nil {
-				log.Println("fail parsing", name, " error:", r)
-				(*wg).Done()
-			}
-		}()
-	*/
+
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("fail parsing", name, " error:", r)
+			(*wg).Done()
+		}
+	}()
+
 	var page template.Page
 
 	page.FullName = name
