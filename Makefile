@@ -17,3 +17,7 @@ print:
 .PHONY: snapshot
 snapshot:
 	@goreleaser --snapshot --skip-publish --rm-dist
+
+.PHONY: get-dashboard-assets
+get-dashboard-assets:
+	@./scripts/get-dashboard-assets.sh
