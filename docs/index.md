@@ -9,7 +9,7 @@ What desire is? When we use `go test -coverpkg=all ./... -cover` it gives a cove
 ## Poor Solution, but still better
 
 I will take the file with all libs and remove it all, easy peace japanese.
-It's poor I know but still better then make tets for all packages, again and again.
+It's poor I know but still better then make tests for all packages, again and again.
 
 ## Usage
 
